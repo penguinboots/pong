@@ -37,13 +37,16 @@ window.onload = function() {
 
 function update() {
   requestAnimationFrame(update);
+  context.clearRect(0, 0, board.width, board.height)
 
   context.fillStyle = "skyblue";
 
   // Draw Player 1 paddle
+  player1.y =+ player1.velocityY;
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
   // Draw Player 2 paddle
+  player2.y += player2.velocityY;
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
 }
 
