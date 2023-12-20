@@ -17,7 +17,7 @@ let player1 = {
   velocityY: playerVelocityY
 }
 
-let player2= {
+let player2 = {
   x: boardWidth - playerWidth - 10,
   y: boardHeight / 2,
   width: playerWidth,
@@ -37,17 +37,31 @@ window.onload = function() {
 
 function update() {
   requestAnimationFrame(update);
-  context.clearRect(0, 0, board.width, board.height)
+  context.clearRect(0, 0, board.width, board.height);
 
   context.fillStyle = "skyblue";
 
-  // Draw Player 1 paddle
-  player1.y += player1.velocityY;
+  // PLAYER 1
+  // Boundary check
+  let newYp1 = player1.y + player1.velocityY;
+  if (!outOfBounds(newYp1)) {
+    player1.y = newYp1;
+  }
+  // Draw paddle
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
-  // Draw Player 2 paddle
-  player2.y += player2.velocityY;
+  // PLAYER 2
+  // Boundary check
+  let newYp2 = player2.y + player2.velocityY;
+  if (!outOfBounds(newYp2)) {
+    player2.y = newYp2;
+  }
+  // Draw paddle
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
+}
+
+function outOfBounds(yPosition) {
+  return (yPosition < 0 || yPosition + playerHeight > boardHeight);
 }
 
 function movePlayer(e) {
