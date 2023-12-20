@@ -42,7 +42,7 @@ function update() {
   context.fillStyle = "skyblue";
 
   // Draw Player 1 paddle
-  player1.y =+ player1.velocityY;
+  player1.y += player1.velocityY;
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
   // Draw Player 2 paddle
@@ -56,6 +56,6 @@ function movePlayer(e) {
   else if (e.code === "KeyS") player1.velocityY = 3;
 
   // Player 2
-  if (e.code == "KeyW") player1.velocityY = -3
-  else if (e.code === "KeyS") player1.velocityY = 3;
+  if (e.code == "ArrowUp") player2.velocityY = -3
+  else if (e.code === "ArrowDown") player2.velocityY = 3;
 }
