@@ -20,4 +20,8 @@ window.onload = function() {
   board.height = boardHeight;
   board.width = boardWidth;
   context = board.getContext("2d");
+
+  // Draw initial player
+  context.fillStyle = "skyblue";
+  context.fillRect(player1.x, player1.y, player1.width, player1.height);
 }
