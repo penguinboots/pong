@@ -7,19 +7,22 @@ let context;
 // Players
 let playerWidth = 10;
 let playerHeight = 50;
+let playerVelocityY = 0;
 
 let player1 = {
   x: 10,
   y: boardHeight / 2,
   width: playerWidth,
-  height: playerHeight
+  height: playerHeight,
+  velocityY: playerVelocityY
 }
 
 let player2= {
   x: boardWidth - playerWidth - 10,
   y: boardHeight / 2,
   width: playerWidth,
-  height: playerHeight
+  height: playerHeight,
+  velocityY: playerVelocityY
 }
 
 window.onload = function() {
@@ -29,6 +32,7 @@ window.onload = function() {
   context = board.getContext("2d");
 
   requestAnimationFrame(update);
+  document.addEventListener("keyup", movePlayer);
 }
 
 function update() {
@@ -36,9 +40,19 @@ function update() {
 
   context.fillStyle = "skyblue";
 
-  // Draw player paddle
+  // Draw Player 1 paddle
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
-  // Draw computer paddle
+  // Draw Player 2 paddle
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
+}
+
+function movePlayer(e) {
+  // Player 1
+  if (e.code == "KeyW") player1.velocityY = -3
+  else if (e.code === "KeyS") player1.velocityY = 3;
+
+  // Player 2
+  if (e.code == "KeyW") player1.velocityY = -3
+  else if (e.code === "KeyS") player1.velocityY = 3;
 }
