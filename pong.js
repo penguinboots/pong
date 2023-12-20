@@ -28,12 +28,17 @@ window.onload = function() {
   board.width = boardWidth;
   context = board.getContext("2d");
 
-  // Draw player paddle
+  requestAnimationFrame(update);
+}
+
+function update() {
+  requestAnimationFrame(update);
+
   context.fillStyle = "skyblue";
+
+  // Draw player paddle
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
   // Draw computer paddle
-  context.fillStyle = "skyblue";
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
-
 }
