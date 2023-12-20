@@ -1,15 +1,15 @@
 // Board properties
 let board;
-let boardWidth = 500;
-let boardHeight = 500;
+const boardWidth = 500;
+const boardHeight = 500;
 let context;
 
 // Players
-let playerWidth = 10;
-let playerHeight = 50;
-let playerVelocityY = 0;
+const playerWidth = 10;
+const playerHeight = 50;
+const playerVelocityY = 0;
 
-let player1 = {
+const player1 = {
   x: 10,
   y: boardHeight / 2,
   width: playerWidth,
@@ -17,12 +17,24 @@ let player1 = {
   velocityY: playerVelocityY
 }
 
-let player2 = {
+const player2 = {
   x: boardWidth - playerWidth - 10,
   y: boardHeight / 2,
   width: playerWidth,
   height: playerHeight,
   velocityY: playerVelocityY
+}
+
+// Ball
+const ballWidth = 10;
+const ballHeight = 10;
+let ball = {
+  x : boardWidth/2,
+  y : boardHeight/2,
+  width: ballWidth,
+  height: ballHeight,
+  velocityX: 1,
+  velocityY: 2,
 }
 
 window.onload = function() {
@@ -41,6 +53,7 @@ function update() {
 
   context.fillStyle = "skyblue";
 
+  //////////////////
   // PLAYER 1
   // Boundary check
   let newYp1 = player1.y + player1.velocityY;
@@ -50,6 +63,7 @@ function update() {
   // Draw paddle
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
+  //////////////////
   // PLAYER 2
   // Boundary check
   let newYp2 = player2.y + player2.velocityY;
@@ -58,6 +72,13 @@ function update() {
   }
   // Draw paddle
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
+
+  //////////////////
+  // BALL
+  context.fillStyle = "white";
+  ball.x += ball.velocityX;
+  ball.y += ball.velocityY;
+  context.fillRect(ball.x, ball.y, ball.width, ball.height)
 }
 
 function outOfBounds(yPosition) {
