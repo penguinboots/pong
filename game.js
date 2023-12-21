@@ -22,6 +22,18 @@ const player2 = {
   velocityY: 0
 }
 
+// Ball
+const ballWidth = 10;
+const ballHeight = 10;
+let ball = {
+  x: 0,
+  y: 0,
+  width: ballWidth,
+  height: ballHeight,
+  velocityX: 1,
+  velocityY: 2,
+}
+
 
 export function startGame(players) {
   board = document.getElementById("board");
@@ -30,13 +42,13 @@ export function startGame(players) {
 
   // Set initial board and player values
   resizeCanvas();
-  resizePlayers();
-  setInitialPlayerPositions();
+  resizeGamePieces();
+  setInitialGamePiecePositions();
 
   // Adjust canvas, players, ball sizes on window resize
   window.addEventListener('resize', () => {
     resizeCanvas();
-    resizePlayers();
+    resizeGamePieces();
   });
 
   requestAnimationFrame(update);
@@ -49,7 +61,7 @@ function resizeCanvas() {
   board.width = window.innerWidth;
 }
 
-function resizePlayers() {
+function resizeGamePieces() {
   player1.height = board.height * 0.15;
   player1.width = board.width * 0.02;
 
@@ -58,14 +70,25 @@ function resizePlayers() {
 
   player2.x = board.width - edgePadding - player2.width;
   paddleHeight = board.height * 0.15;
+
+  ball.height = board.height * 0.05;
+  ball.width = ball.height;
 }
 
-function setInitialPlayerPositions() {
+function setInitialGamePiecePositions() {
   player1.y = board.height / 2 - player1.height / 2;
   player1.x = edgePadding;
 
   player2.y = board.height / 2 - player2.height / 2;
   player2.x = board.width - edgePadding - player2.width;
+
+  ball = {
+    ...ball,
+    x: board.width / 2,
+    y: board.height / 2,
+    velocityX: 2,
+    velocityY: 4,
+  }
 }
 
 function moveViaKeyboard(e) {
@@ -93,16 +116,24 @@ function update() {
   context.clearRect(0, 0, board.width, board.height);
   context.fillStyle = "white";
 
+  /////////////////////////////////
+  // PLAYER 1
+  /////////////////////////////////
+  //
   // Move player 1 (keyboard)
   moveHumanPlayer(1);
   // Render player 1
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
+  /////////////////////////////////
+  // PLAYER 2
+  /////////////////////////////////
+  //
   // Move player 2 (computer)
   if (numOfPlayers === 1) {
     moveComputer();
   }
-
+  //
   // Move player 2 (keyboard)
   if (numOfPlayers === 2) {
     moveHumanPlayer(2);
@@ -110,6 +141,17 @@ function update() {
   // Render player 2
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
 
+  /////////////////////////////////
+  // BALL
+  /////////////////////////////////
+  //
+  ball.x += ball.velocityX;
+  ball.y += ball.velocityY;
+  context.fillRect(ball.x, ball.y, ball.width, ball.height)
+  // Boundary check (top and bottom), reverse direction
+  if (ball.y <= 0 || (ball.y + ball.height) >= board.height) {
+    ball.velocityY *= -1;
+  }
 }
 
 // Check if paddle is at play boundary
