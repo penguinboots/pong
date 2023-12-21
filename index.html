@@ -1,23 +1,29 @@
 <html>
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport", content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" , content="width=device-width, initial-scale=1.0" />
     <title>Pong</title>
-    <link rel="stylesheet" href="pong.css">
-    <script src="pong.js"></script>
+    <link rel="stylesheet" href="pong.css" />
   </head>
 
   <body>
-    <div class="screen"><canvas id="board"></canvas></div>
-    <div class="ui">
-      <div class="start-menu">
-        <button>PONG!</button>
+    <div class="screen" id="start-screen">
+      <h1>PONG</h1>
+      <div class="start-buttons">
+        <button id="vs-pc">1 PLAYER</button>
+        <button id="2p-vs">2 PLAYERS</button>
       </div>
-      <div class="play-menu">
+    </div>
+    <div class="screen" id="game-screen">
+      <canvas id="board"></canvas>
+      <div class="game-ui">
         <button>Pause</button>
         <button>Quit</button>
         <button>Restart</button>
       </div>
     </div>
   </body>
+
+  <script src="pong.js"></script>
+  <script src="main.js"></script>
 </html>

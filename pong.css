@@ -4,12 +4,41 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
 }
 
 .screen {
   background-color: darkolivegreen;
-  height: 90vh;
+  height: 100%;
   width: 100%;
+}
+
+#start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#start-screen .start-buttons {
+  display: flex;
+}
+
+#start-screen button {
+  width: 8rem;
+  margin: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.7rem;
+  background-color: transparent;
+  border: 2px solid white;
+}
+
+#game-screen {
+  display: none;
 }
 
 .ui {
