@@ -1,11 +1,15 @@
+/////////////////////////////////////////////////////////////////
+/////////////////////////// VARIABLES ///////////////////////////
+/////////////////////////////////////////////////////////////////
+
 // Board
 let board;
 let context;
-let edgePadding = 20;
+const edgePadding = 20;
 
 // Players
-let paddleHeight = 0;
-let numOfPlayers = 0;
+let paddleHeight;
+let numOfPlayers;
 const player1 = {
   x: 0,
   y: 0,
@@ -13,7 +17,6 @@ const player1 = {
   height: paddleHeight,
   velocityY: 0
 }
-
 const player2 = {
   x: 0,
   y: 0,
@@ -23,19 +26,25 @@ const player2 = {
 }
 
 // Ball
-const ballWidth = 10;
-const ballHeight = 10;
+const ballBaseVelocityX = 2;
+const ballBaseVelocityY = 4;
 let ball = {
   x: 0,
   y: 0,
-  width: ballWidth,
-  height: ballHeight,
-  velocityX: 1,
-  velocityY: 2,
+  width: 0,
+  height: 0,
+  velocityX: ballBaseVelocityX,
+  velocityY: ballBaseVelocityY,
 }
 
+// Game flow
 let gameInProgress = true;
+let p1Score = 0;
+let p2Score = 0;
 
+/////////////////////////////////////////////////////////////////
+///////////////////////////// MAIN //////////////////////////////
+/////////////////////////////////////////////////////////////////
 
 export function startGame(players) {
   board = document.getElementById("board");
@@ -54,16 +63,42 @@ export function startGame(players) {
   });
 
   gameInProgress = true;
-  requestAnimationFrame(update);
-  document.addEventListener("keydown", moveViaKeyboard);
-  document.addEventListener("keyup", stopViaKeyboard);
+  requestAnimationFrame(gameLoop);
+  document.addEventListener("keydown", setHumanVelocity);
+  document.addEventListener("keyup", stopHumanVelocity);
 }
 
+function gameLoop() {
+  if (gameInProgress) {
+    requestAnimationFrame(gameLoop);
+  }
+  context.clearRect(0, 0, board.width, board.height);
+  context.fillStyle = "white";
+
+  // PADDLE MOVEMENT
+  numOfPlayers === 1 && setComputerVelocity();
+  movePaddles();
+  context.fillRect(player1.x, player1.y, player1.width, player1.height);
+  context.fillRect(player2.x, player2.y, player2.width, player2.height);
+
+  // BALL MOVEMENT
+  moveBall();
+  context.fillRect(ball.x, ball.y, ball.width, ball.height);
+
+  roundOverCheck();
+}
+
+/////////////////////////////////////////////////////////////////
+/////////////////// RESIZERS AND POSITIONERS ////////////////////
+/////////////////////////////////////////////////////////////////
+
+// Resize game board on window change
 function resizeCanvas() {
   board.height = window.innerHeight * 0.9;
   board.width = window.innerWidth;
 }
 
+// Resize paddles and ball on window change
 function resizeGamePieces() {
   player1.height = board.height * 0.15;
   player1.width = board.width * 0.02;
@@ -78,6 +113,7 @@ function resizeGamePieces() {
   ball.width = ball.height;
 }
 
+// Set initial paddle/ball positions and velocities
 function setInitialGamePiecePositions() {
   player1.y = board.height / 2 - player1.height / 2;
   player1.x = edgePadding;
@@ -91,101 +127,140 @@ function setInitialGamePiecePositions() {
     ...ball,
     x: board.width / 2,
     y: board.height / 2,
-    velocityX: 2,
-    velocityY: 4,
   }
 }
 
-function moveViaKeyboard(e) {
+/////////////////////////////////////////////////////////////////
+///////////////////////// GAME HELPERS //////////////////////////
+/////////////////////////////////////////////////////////////////
+
+// Handler for keydowns, change player velocity (start moving)
+function setHumanVelocity(e) {
   if (e.code === "KeyW") player1.velocityY = -5
   else if (e.code === "KeyS") player1.velocityY = 5;
-
+  // only process arrow keys if in 2P mode
   if (numOfPlayers === 2) {
     if (e.code === "ArrowUp") player2.velocityY = -5
     else if (e.code === "ArrowDown") player2.velocityY = 5;
   }
 }
 
-function stopViaKeyboard(e) {
+// Handler for keyups, change player velocity (stop moving)
+function stopHumanVelocity(e) {
   if (e.code === "KeyW" || e.code === "KeyS") {
     player1.velocityY = 0;
   }
-  if (e.code === "ArrowUp" || e.code === "ArrowDown") {
-    player2.velocityY = 0;
+  // only process arrow keys if in 2P mode
+  if (numOfPlayers === 2) {
+    if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+      player2.velocityY = 0;
+    }
   }
 }
 
+// Change computer velocity according to ball position
+function setComputerVelocity() {
+  const trueBallPosition = { x: ball.x + ball.width / 2, y: ball.y + ball.height / 2 }
+  const trueComputerPosition = { y: player2.y + player2.height / 2 }
+  const midboardY = board.height / 2;
+  const midboardX = board.width / 2;
 
-function update() {
-  if (gameInProgress) {
-    requestAnimationFrame(update);
+  // If ball is on P2 side, try to match X position
+  if (trueBallPosition.x >= midboardX) {
+    trueBallPosition.y > trueComputerPosition.y ?
+      player2.velocityY = 5
+      :
+      player2.velocityY = -5
   }
-  console.log(player1.velocityY)
-  context.clearRect(0, 0, board.width, board.height);
-  context.fillStyle = "white";
-
-  /////////////////////////////////
-  // PLAYER 1
-  /////////////////////////////////
-  //
-  // Move player 1 (keyboard)
-  moveHumanPlayer(1);
-  // Render player 1
-  context.fillRect(player1.x, player1.y, player1.width, player1.height);
-
-  /////////////////////////////////
-  // PLAYER 2
-  /////////////////////////////////
-  //
-  // Move player 2 (computer)
-  if (numOfPlayers === 1) {
-    moveComputer();
+  // If ball is not on P2 side, return to middle
+  if (trueBallPosition.x < midboardX) {
+    if (trueComputerPosition.y === midboardY) {
+      player2.velocityY = 0;
+    } else if (trueComputerPosition.y > midboardY) {
+      player2.velocityY = -5;
+    } else {
+      player2.velocityY = 5;
+    }
   }
-  //
-  // Move player 2 (keyboard)
-  if (numOfPlayers === 2) {
-    moveHumanPlayer(2);
-  }
-  // Render player 2
-  context.fillRect(player2.x, player2.y, player2.width, player2.height);
+}
 
-  /////////////////////////////////
-  // BALL
-  /////////////////////////////////
-  //
+// Change paddle positions according to velocity and play boundary
+function movePaddles() {
+  let newYp1 = player1.y + player1.velocityY;
+  if (!outOfBounds(newYp1)) {
+    player1.y = newYp1;
+  }
+
+  let newYp2 = player2.y + player2.velocityY;
+  if (!outOfBounds(newYp2)) {
+    player2.y = newYp2;
+  }
+}
+
+// Change ball position according to on velocity, collisions, and play boundary
+function moveBall() {
   ball.x += ball.velocityX;
   ball.y += ball.velocityY;
-  context.fillRect(ball.x, ball.y, ball.width, ball.height)
   // Boundary check (top and bottom), reverse direction
   if (ball.y <= 0 || (ball.y + ball.height) >= board.height) {
     ball.velocityY *= -1;
   }
+  // Collision check (paddles), reverse direction
+  if (detectCollision(ball, player1)) {
+    if (ball.x <= player1.x + player1.width) {
+      ball.velocityX *= -1;
+    }
+  }
+  else if (detectCollision(ball, player2)) {
+    if (ball.x + ball.width >= player2.x) {
+      ball.velocityX *= -1;
+    }
+  }
 }
+
+// Ends round if ball out of bounds
+function roundOverCheck() {
+  if (ball.x < 0) {
+    p2Score++;
+    newRound(1);
+  } else if (ball.x + ball.width > board.width) {
+    p1Score++;
+    newRound(-1);
+  }
+}
+
+// Starts new round
+function newRound(direction) {
+  ball = {
+    x: board.width / 2,
+    y: board.height / 2,
+    width: ball.width,
+    height: ball.height,
+    velocityX: ball.velocityX * direction,
+    velocityY: ballBaseVelocityY,
+  }
+  console.log(ball.velocityX, ball.velocityY)
+}
+
+// Ends game loop
+export function endGame() {
+  gameInProgress = false;
+}
+
+
+/////////////////////////////////////////////////////////////////
+//////////////////////////// CHECKS /////////////////////////////
+/////////////////////////////////////////////////////////////////
 
 // Check if paddle is at play boundary
 function outOfBounds(yPosition) {
   return (yPosition < 0 || yPosition + paddleHeight > board.height);
 }
 
-// Change player position according to velocity and play boundary
-function moveHumanPlayer(p) {
-  if (p === 1) {
-    let newYp1 = player1.y + player1.velocityY;
-    if (!outOfBounds(newYp1)) {
-      player1.y = newYp1;
-    }
-  } else if (p === 2) {
-    let newYp2 = player2.y + player2.velocityY;
-    if (!outOfBounds(newYp2)) {
-      player2.y = newYp2;
-    }
-  }
-}
-
-function moveComputer() {
-
-}
-
-export function endGame() {
-  gameInProgress = false;
+// Check if two shapes are touching
+function detectCollision(a, b) {
+  return a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
 }
