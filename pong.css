@@ -1,5 +1,21 @@
 body {
   text-align: center;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  background-color: darkolivegreen;
+  height: 90vh;
+  width: 100%;
+}
+
+.ui {
+  background-color: black;
+  width: 100%;
+  height: 10vh;
 }
 
 #board {
