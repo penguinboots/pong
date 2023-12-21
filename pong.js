@@ -102,14 +102,21 @@ function update() {
   // End of round
   if (ball.x < 0) {
     p2Score++;
+    resetGame(1);
   } else if (ball.x + ballWidth > boardWidth) {
     p1Score++;
+    resetGame(-1);
   }
 
   // Score
   context.font = "45px sans-serif";
   context.fillText(p1Score, boardWidth/5, 45);
   context.fillText(p2Score, boardWidth*4/5 -45, 45)
+
+  // Draw middle line
+  for (let i = 10; i < board.height; i+= 25) {
+    context.fillRect(board.width/2 - 2.5, i, 5, 5);
+  }
 }
 
 function outOfBounds(yPosition) {
@@ -131,4 +138,15 @@ function detectCollision(a, b) {
     a.x + a.width > b.x &&
     a.y < b.y + b.height &&
     a.y + a.height > b.y
+}
+
+function resetGame(direction) {
+  ball = {
+    x: boardWidth / 2,
+    y: boardHeight / 2,
+    width: ballWidth,
+    height: ballHeight,
+    velocityX: direction,
+    velocityY: 2,
+  }
 }
