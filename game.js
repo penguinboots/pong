@@ -34,6 +34,8 @@ let ball = {
   velocityY: 2,
 }
 
+let gameInProgress = true;
+
 
 export function startGame(players) {
   board = document.getElementById("board");
@@ -51,6 +53,7 @@ export function startGame(players) {
     resizeGamePieces();
   });
 
+  gameInProgress = true;
   requestAnimationFrame(update);
   document.addEventListener("keydown", moveViaKeyboard);
   document.addEventListener("keyup", stopViaKeyboard);
@@ -78,9 +81,11 @@ function resizeGamePieces() {
 function setInitialGamePiecePositions() {
   player1.y = board.height / 2 - player1.height / 2;
   player1.x = edgePadding;
+  player1.velocityY = 0;
 
   player2.y = board.height / 2 - player2.height / 2;
   player2.x = board.width - edgePadding - player2.width;
+  player2.velocityY = 0;
 
   ball = {
     ...ball,
@@ -92,12 +97,12 @@ function setInitialGamePiecePositions() {
 }
 
 function moveViaKeyboard(e) {
-  if (e.code === "KeyW") player1.velocityY = -4
-  else if (e.code === "KeyS") player1.velocityY = 4;
+  if (e.code === "KeyW") player1.velocityY = -5
+  else if (e.code === "KeyS") player1.velocityY = 5;
 
   if (numOfPlayers === 2) {
-    if (e.code === "ArrowUp") player2.velocityY = -4
-    else if (e.code === "ArrowDown") player2.velocityY = 4;
+    if (e.code === "ArrowUp") player2.velocityY = -5
+    else if (e.code === "ArrowDown") player2.velocityY = 5;
   }
 }
 
@@ -112,7 +117,10 @@ function stopViaKeyboard(e) {
 
 
 function update() {
-  requestAnimationFrame(update);
+  if (gameInProgress) {
+    requestAnimationFrame(update);
+  }
+  console.log(player1.velocityY)
   context.clearRect(0, 0, board.width, board.height);
   context.fillStyle = "white";
 
@@ -176,4 +184,8 @@ function moveHumanPlayer(p) {
 
 function moveComputer() {
 
+}
+
+export function endGame() {
+  gameInProgress = false;
 }
