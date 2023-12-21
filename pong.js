@@ -29,13 +29,17 @@ const player2 = {
 const ballWidth = 10;
 const ballHeight = 10;
 let ball = {
-  x : boardWidth/2,
-  y : boardHeight/2,
+  x: boardWidth / 2,
+  y: boardHeight / 2,
   width: ballWidth,
   height: ballHeight,
   velocityX: 1,
   velocityY: 2,
 }
+
+// Scores
+let p1Score = 0;
+let p2Score = 0;
 
 window.onload = function() {
   board = document.getElementById("board");
@@ -79,6 +83,33 @@ function update() {
   ball.x += ball.velocityX;
   ball.y += ball.velocityY;
   context.fillRect(ball.x, ball.y, ball.width, ball.height)
+  // Boundary check (top and bottom), reverse direction
+  if (ball.y <= 0 || (ball.y + ball.height) >= boardHeight) {
+    ball.velocityY *= -1;
+  }
+  // Collision check (paddles), reverse direction
+  if (detectCollision(ball, player1)) {
+    if (ball.x <= player1.x + player1.width) {
+      ball.velocityX *= -1;
+    }
+  }
+  else if (detectCollision(ball, player2)) {
+    if (ball.x + ballWidth >= player2.x) {
+      ball.velocityX *= -1;
+    }
+  }
+
+  // End of round
+  if (ball.x < 0) {
+    p2Score++;
+  } else if (ball.x + ballWidth > boardWidth) {
+    p1Score++;
+  }
+
+  // Score
+  context.font = "45px sans-serif";
+  context.fillText(p1Score, boardWidth/5, 45);
+  context.fillText(p2Score, boardWidth*4/5 -45, 45)
 }
 
 function outOfBounds(yPosition) {
@@ -93,4 +124,11 @@ function movePlayer(e) {
   // Player 2
   if (e.code == "ArrowUp") player2.velocityY = -3
   else if (e.code === "ArrowDown") player2.velocityY = 3;
+}
+
+function detectCollision(a, b) {
+  return a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
 }
