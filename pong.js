@@ -48,7 +48,8 @@ window.onload = function() {
   context = board.getContext("2d");
 
   requestAnimationFrame(update);
-  document.addEventListener("keyup", movePlayer);
+  document.addEventListener("keydown", movePlayer);
+  document.addEventListener("keyup", stopPlayer);
 }
 
 function update() {
@@ -125,12 +126,21 @@ function outOfBounds(yPosition) {
 
 function movePlayer(e) {
   // Player 1
-  if (e.code == "KeyW") player1.velocityY = -3
+  if (e.code === "KeyW") player1.velocityY = -3
   else if (e.code === "KeyS") player1.velocityY = 3;
 
   // Player 2
-  if (e.code == "ArrowUp") player2.velocityY = -3
+  if (e.code === "ArrowUp") player2.velocityY = -3
   else if (e.code === "ArrowDown") player2.velocityY = 3;
+}
+
+function stopPlayer(e) {
+  if (e.code === "KeyW" || e.code === "KeyS") {
+    player1.velocityY = 0;
+  }
+  if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+    player2.velocityY = 0;
+  }
 }
 
 function detectCollision(a, b) {
