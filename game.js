@@ -4,8 +4,8 @@ let context;
 let edgePadding = 20;
 
 // Players
-
 let paddleHeight = 0;
+let numOfPlayers = 0;
 const player1 = {
   x: 0,
   y: 0,
@@ -26,7 +26,8 @@ const player2 = {
 export function startGame(players) {
   board = document.getElementById("board");
   context = board.getContext("2d");
-  
+  numOfPlayers = players;
+
   // Set initial board and player values
   resizeCanvas();
   resizePlayers();
@@ -39,8 +40,8 @@ export function startGame(players) {
   });
 
   requestAnimationFrame(update);
-  document.addEventListener("keydown", movePlayer);
-  document.addEventListener("keyup", stopPlayer);
+  document.addEventListener("keydown", moveViaKeyboard);
+  document.addEventListener("keyup", stopViaKeyboard);
 }
 
 function resizeCanvas() {
@@ -48,10 +49,10 @@ function resizeCanvas() {
   board.width = window.innerWidth;
 }
 
-function resizePlayers () {
+function resizePlayers() {
   player1.height = board.height * 0.15;
   player1.width = board.width * 0.02;
-  
+
   player2.height = board.height * 0.15;
   player2.width = board.width * 0.02;
 
@@ -67,17 +68,17 @@ function setInitialPlayerPositions() {
   player2.x = board.width - edgePadding - player2.width;
 }
 
-function movePlayer(e) {
-  // Player 1
+function moveViaKeyboard(e) {
   if (e.code === "KeyW") player1.velocityY = -4
   else if (e.code === "KeyS") player1.velocityY = 4;
 
-  // Player 2
-  if (e.code === "ArrowUp") player2.velocityY = -4
-  else if (e.code === "ArrowDown") player2.velocityY = 4;
+  if (numOfPlayers === 2) {
+    if (e.code === "ArrowUp") player2.velocityY = -4
+    else if (e.code === "ArrowDown") player2.velocityY = 4;
+  }
 }
 
-function stopPlayer(e) {
+function stopViaKeyboard(e) {
   if (e.code === "KeyW" || e.code === "KeyS") {
     player1.velocityY = 0;
   }
@@ -86,26 +87,51 @@ function stopPlayer(e) {
   }
 }
 
+
 function update() {
   requestAnimationFrame(update);
   context.clearRect(0, 0, board.width, board.height);
-
   context.fillStyle = "white";
 
-  let newYp1 = player1.y + player1.velocityY;
-  if (!outOfBounds(newYp1)) {
-    player1.y = newYp1;
-  }
+  // Move player 1 (keyboard)
+  moveHumanPlayer(1);
+  // Render player 1
   context.fillRect(player1.x, player1.y, player1.width, player1.height);
-  
 
-  let newYp2 = player2.y + player2.velocityY;
-  if (!outOfBounds(newYp2)) {
-    player2.y = newYp2;
+  // Move player 2 (computer)
+  if (numOfPlayers === 1) {
+    moveComputer();
   }
+
+  // Move player 2 (keyboard)
+  if (numOfPlayers === 2) {
+    moveHumanPlayer(2);
+  }
+  // Render player 2
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
+
 }
 
+// Check if paddle is at play boundary
 function outOfBounds(yPosition) {
   return (yPosition < 0 || yPosition + paddleHeight > board.height);
+}
+
+// Change player position according to velocity and play boundary
+function moveHumanPlayer(p) {
+  if (p === 1) {
+    let newYp1 = player1.y + player1.velocityY;
+    if (!outOfBounds(newYp1)) {
+      player1.y = newYp1;
+    }
+  } else if (p === 2) {
+    let newYp2 = player2.y + player2.velocityY;
+    if (!outOfBounds(newYp2)) {
+      player2.y = newYp2;
+    }
+  }
+}
+
+function moveComputer() {
+
 }

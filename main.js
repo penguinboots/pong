@@ -16,12 +16,12 @@ window.onload = function() {
 
   vsPCBtn.addEventListener('click', function() {
     toggleMode();
-    startGame();
+    startGame(1);
   })
 
   vs2PBtn.addEventListener('click', function() {
     toggleMode();
-    startGame();
+    startGame(2);
   })
 
   quitBtn.addEventListener('click',function() {
