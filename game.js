@@ -270,7 +270,6 @@ function newRound(direction) {
     velocityX: newX,
     velocityY: newY,
   }
-  console.log(ball.velocityX, ball.velocityY)
 }
 
 // Set game difficulty based on player scores
