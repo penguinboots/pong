@@ -1,4 +1,4 @@
-import { startGame, endGame } from "./game.js";
+import { startGame, endGame, newGame } from "./game.js";
 
 let startScreen;
 let gameScreen;
@@ -27,6 +27,10 @@ window.onload = function() {
   quitBtn.addEventListener('click',function() {
     toggleMode();
     endGame();
+  })
+
+  restartBtn.addEventListener('click', function() {
+    newGame();
   })
 }
 
