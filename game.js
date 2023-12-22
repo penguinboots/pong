@@ -27,7 +27,7 @@ const player2 = {
 
 // Ball
 const ballBaseVelocityX = -2;
-const ballBaseVelocityY = 4;
+const ballBaseVelocityY = 5;
 let ball = {
   x: 0,
   y: 0,
@@ -41,6 +41,11 @@ let ball = {
 let gameInProgress = true;
 let p1Score = 0;
 let p2Score = 0;
+
+// Difficulty scaling
+let level = 1;
+const speedsX = [0, 2, 4, 6]
+const speedsY = [0, 5, 6.25, 7.5]
 
 // FPS control
 let lastFrameTime = 0;
@@ -246,22 +251,50 @@ function setBallVelocity() {
 function roundOverCheck() {
   if (ball.x < 0) {
     p2Score++;
+    setGameLevel();
     newRound(1);
   } else if (ball.x + ball.width > board.width) {
     p1Score++;
+    setGameLevel();
     newRound(-1);
   }
 }
 
 // Starts new round
 function newRound(direction) {
+  const { newX, newY } = getBallVelocity(direction);
   ball = {
     ...ball,
     x: board.width / 2 - ball.width / 2,
     y: board.height / 2 - ball.width / 2,
-    velocityX: ball.velocityX * direction,
-    velocityY: ballBaseVelocityY,
+    velocityX: newX,
+    velocityY: newY,
   }
+  console.log(ball.velocityX, ball.velocityY)
+}
+
+// Set game difficulty based on player scores
+function setGameLevel() {
+  if (numOfPlayers === 1) {
+    if (p1Score >= 5) {
+      level = 3;
+    } else if (p1Score >= 2) {
+      level = 2;
+    }
+  } else if (numOfPlayers === 2) {
+    if (p1Score + p2Score >= 5) {
+      level = 3;
+    } else if (p1Score + p2Score >= 2) {
+      level = 2;
+    }
+  }
+}
+
+// Get new ball velocity based on game difficulty
+function getBallVelocity(direction) {
+  let newVelX = speedsX[level] * direction
+  let newVelY = speedsY[level]
+  return { x: newVelX, y: newVelY }
 }
 
 // Restarts game
