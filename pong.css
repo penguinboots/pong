@@ -7,8 +7,26 @@ body {
   overflow: hidden;
 
   color: white;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-weight: 700;
+}
+
+button {
+  width: 10rem;
+  margin: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.7rem;
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+  font-size: large;
+  font-weight: 500;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: olive;
 }
 
 .screen {
@@ -26,15 +44,6 @@ body {
 
 #start-screen .start-buttons {
   display: flex;
-}
-
-#start-screen button {
-  width: 8rem;
-  margin: 0.5rem;
-  padding: 1rem;
-  border-radius: 0.7rem;
-  background-color: transparent;
-  border: 2px solid white;
 }
 
 #game-screen {
