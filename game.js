@@ -42,7 +42,7 @@ let gameInProgress = true;
 let p1Score = 0;
 let p2Score = 0;
 
-// Difficulty scaling
+// Difficulty scaling, speeds per level
 let level = 1;
 const speedsX = [0, 2, 4, 6]
 const speedsY = [0, 5, 6.25, 7.5]
