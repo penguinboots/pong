@@ -26,7 +26,7 @@ const player2 = {
 }
 
 // Ball
-const ballBaseVelocityX = 2;
+const ballBaseVelocityX = -2;
 const ballBaseVelocityY = 4;
 let ball = {
   x: 0,
@@ -41,6 +41,11 @@ let ball = {
 let gameInProgress = true;
 let p1Score = 0;
 let p2Score = 0;
+
+// FPS control
+let lastFrameTime = 0;
+const targetFPS = 60;
+const frameDuration = 1000 / targetFPS;
 
 /////////////////////////////////////////////////////////////////
 ///////////////////////////// MAIN //////////////////////////////
@@ -68,12 +73,30 @@ export function startGame(players) {
   document.addEventListener("keyup", stopHumanVelocity);
 }
 
-function gameLoop() {
+function gameLoop(timestamp) {
   if (gameInProgress) {
     requestAnimationFrame(gameLoop);
+
+    // Control FPS for higher hz displays
+    const elapsedTime = timestamp - lastFrameTime;
+    if (elapsedTime < frameDuration) {
+      return;
+    }
+    lastFrameTime = timestamp - (elapsedTime % frameDuration);
   }
+
   context.clearRect(0, 0, board.width, board.height);
   context.fillStyle = "white";
+
+  // DRAW MIDDLE LINE
+  for (let i = 10; i < board.height; i += 50) {
+    context.fillRect(board.width / 2 - 2.5, i, 5, 20);
+  }
+
+  // SCORE DISPLAY
+  context.font = "45px monospace";
+  context.fillText(p1Score, board.width / 5, 95);
+  context.fillText(p2Score, board.width * 4 / 5 - 45, 95)
 
   // PADDLE MOVEMENT
   numOfPlayers === 1 && setComputerVelocity();
@@ -82,9 +105,10 @@ function gameLoop() {
   context.fillRect(player2.x, player2.y, player2.width, player2.height);
 
   // BALL MOVEMENT
-  moveBall();
+  setBallVelocity();
   context.fillRect(ball.x, ball.y, ball.width, ball.height);
 
+  // CHECK IF ROUND IS OVER
   roundOverCheck();
 }
 
@@ -125,8 +149,8 @@ function setInitialGamePiecePositions() {
 
   ball = {
     ...ball,
-    x: board.width / 2,
-    y: board.height / 2,
+    x: board.width / 2 - ball.width / 2,
+    y: board.height / 2 - ball.width / 2,
   }
 }
 
@@ -198,7 +222,7 @@ function movePaddles() {
 }
 
 // Change ball position according to on velocity, collisions, and play boundary
-function moveBall() {
+function setBallVelocity() {
   ball.x += ball.velocityX;
   ball.y += ball.velocityY;
   // Boundary check (top and bottom), reverse direction
@@ -232,14 +256,19 @@ function roundOverCheck() {
 // Starts new round
 function newRound(direction) {
   ball = {
-    x: board.width / 2,
-    y: board.height / 2,
-    width: ball.width,
-    height: ball.height,
+    ...ball,
+    x: board.width / 2 - ball.width / 2,
+    y: board.height / 2 - ball.width / 2,
     velocityX: ball.velocityX * direction,
     velocityY: ballBaseVelocityY,
   }
-  console.log(ball.velocityX, ball.velocityY)
+}
+
+// Restarts game
+export function newGame() {
+  p1Score = 0;
+  p2Score = 0;
+  setInitialGamePiecePositions();
 }
 
 // Ends game loop
