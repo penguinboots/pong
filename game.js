@@ -262,13 +262,13 @@ function roundOverCheck() {
 
 // Starts new round
 function newRound(direction) {
-  const { newX, newY } = getBallVelocity(direction);
+  const { x, y } = getBallVelocity(direction);
   ball = {
     ...ball,
     x: board.width / 2 - ball.width / 2,
     y: board.height / 2 - ball.width / 2,
-    velocityX: newX,
-    velocityY: newY,
+    velocityX: x,
+    velocityY: y,
   }
 }
 
